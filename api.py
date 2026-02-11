@@ -3,9 +3,7 @@ import numpy as np
 import pandas as pd
 
 from src.artifact_handling import handle_artifacts
-
 app = FastAPI(title="Smart Ambulance Risk API")
-
 @app.post("/analyze")
 def analyze_vitals(vitals: dict):
     """
@@ -14,18 +12,13 @@ def analyze_vitals(vitals: dict):
     """
 
     df = pd.DataFrame([vitals])
-
-    # Artifact handling
     df = handle_artifacts(df)
-
-    # Simple anomaly logic (single-window version)
+    #anomaly logic 
     hr_dev = abs(df["heart_rate"].iloc[0] - 75) / 10
     spo2_dev = abs(df["spo2"].iloc[0] - 98) / 2
-
     anomaly_score = hr_dev + spo2_dev
     anomaly_flag = anomaly_score > 3
 
-    # Risk score
     risk_score = min(anomaly_score / 5, 1.0)
 
     return {
@@ -46,14 +39,12 @@ def demo():
 
     df = pd.DataFrame([vitals])
     df = handle_artifacts(df)
-
+    
     hr_dev = abs(df["heart_rate"].iloc[0] - 75) / 10
     spo2_dev = abs(df["spo2"].iloc[0] - 98) / 2
-
     anomaly_score = hr_dev + spo2_dev
     anomaly_flag = anomaly_score > 3
     risk_score = min(anomaly_score / 5, 1.0)
-
     return {
         "input": vitals,
         "anomaly_flag": bool(anomaly_flag),
